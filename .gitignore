@@ -28,3 +28,4 @@ coverage.xml
 
 .json
 .sqlite3
+fixtures/
