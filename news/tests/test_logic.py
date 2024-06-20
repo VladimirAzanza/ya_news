@@ -80,3 +80,9 @@ class TestCommentEditDelete(TestCase):
         self.assertRedirects(response, self.url_to_comments)
         comments_count = Comment.objects.count()
         self.assertEqual(comments_count, 0)
+
+    def test_user_cant_delete_comment_of_another_user(self):
+        response = self.reader_client.delete(self.delete_url)
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        comments_count = Comment.objects.count()
+        self.assertEqual(comments_count, 1)
