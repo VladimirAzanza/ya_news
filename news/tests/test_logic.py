@@ -86,3 +86,15 @@ class TestCommentEditDelete(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
         comments_count = Comment.objects.count()
         self.assertEqual(comments_count, 1)
+
+    def test_author_can_edit_comment(self):
+        response = self.author_client.post(self.edit_url, data=self.form_data)
+        self.assertRedirects(response, self.url_to_comments)
+        self.comment.refresh_from_db()
+        self.assertEqual(self.comment.text, self.NEW_COMMENT_TEXT)
+
+    def test_user_cant_edit_comment_of_another_user(self):
+        response = self.reader_client.post(self.edit_url, data=self.form_data)
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        self.comment.refresh_from_db()
+        self.assertEqual(self.comment.text, self.COMMENT_TEXT)
