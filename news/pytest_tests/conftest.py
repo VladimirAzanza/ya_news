@@ -71,3 +71,10 @@ def eleven_news():
         for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)
     )
     return eleven_news
+
+
+@pytest.fixture
+def form_data():
+    return {
+        'text': 'Текст комментария'
+    }

@@ -7,14 +7,14 @@ from pytest_django.asserts import assertRedirects
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-        'name, args',
-        (
-            ('news:home', None),
-            ('news:detail', pytest.lazy_fixture('news_id')),
-            ('users:login', None),
-            ('users:logout', None),
-            ('users:signup', None),
-        ),
+    'name, args',
+    (
+        ('news:home', None),
+        ('news:detail', pytest.lazy_fixture('news_id')),
+        ('users:login', None),
+        ('users:logout', None),
+        ('users:signup', None),
+    ),
 )
 def test_pages_availability(name, args, client):
     url = reverse(name, args=args)
