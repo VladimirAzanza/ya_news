@@ -1,30 +1,52 @@
 from django.conf import settings
-from django.urls import reverse
 import pytest
 
 from news.forms import CommentForm
 
 
-@pytest.mark.django_db
-def test_news_count(client, eleven_news):
-    response = client.get(reverse('news:home'))
+pytestmark = pytest.mark.django_db
+
+
+def test_news_count(client, home_url, eleven_news):
+    """
+    Test the count of news on the home page.
+
+    Arguments:
+        client (django.test.Client): Django test client instance.
+        home_url (str): URL to the home page.
+        eleven_news (fixture): Fixture that generate eleven news.
+    """
+    response = client.get(home_url)
     object_list = response.context['object_list']
     news_count = object_list.count()
     assert news_count == settings.NEWS_COUNT_ON_HOME_PAGE
 
 
-@pytest.mark.django_db
-def test_news_order(client, eleven_news):
-    response = client.get(reverse('news:home'))
+def test_news_order(client, home_url, eleven_news):
+    """
+    Test the news order by date on the home page.
+
+    Arguments:
+        client (django.test.Client): Django test client instance.
+        home_url (str): URL to the home page.
+        eleven_news (fixture): Fixture that generate eleven news.
+    """
+    response = client.get(home_url)
     object_list = response.context['object_list']
     all_dates = [news.date for news in object_list]
     sorted_dates = sorted(all_dates, reverse=True)
     assert all_dates == sorted_dates
 
 
-@pytest.mark.django_db
-def test_comments_order(client, news_id):
-    response = client.get(reverse('news:detail', args=news_id))
+def test_comments_order(client, detail_url):
+    """
+    Test the comments order by date on the news detail URL.
+
+    Arguments:
+        client (django.test.Client): Django test client instance.
+        detail_url (str): URL to the news detail.
+    """
+    response = client.get(detail_url)
     assert 'news' in response.context
     news = response.context['news']
     all_comments = news.comment_set.all()
@@ -33,14 +55,28 @@ def test_comments_order(client, news_id):
     assert all_timestamps == sorted_timestamps
 
 
-@pytest.mark.django_db
-def test_anonymous_client_has_no_form(client, news_id):
-    response = client.get(reverse('news:detail', args=news_id))
+def test_anonymous_client_has_no_form(client, detail_url):
+    """
+    Test that anonymous client has no comment form at the news detail URL.
+
+    Arguments:
+        client (django.test.Client): Django test client instance.
+        detail_url (str): URL to the news detail.
+    """
+    response = client.get(detail_url)
     assert 'form' not in response.context
 
 
-@pytest.mark.django_db
-def test_authorized_client_has_form(author_client, news_id):
-    response = author_client.get(reverse('news:detail', args=news_id))
+def test_authorized_client_has_form(author_client, detail_url):
+    """
+    Test that an authenticated client has a comment form at the news
+    detail URL.
+
+    Arguments:
+        author_client (django.test.Client): Django client instance.
+            Represents an author comment client.
+        detail_url (str): URL to the news detail.
+    """
+    response = author_client.get(detail_url)
     assert 'form' in response.context
     assert isinstance(response.context['form'], CommentForm)

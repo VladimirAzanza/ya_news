@@ -1,0 +1,6 @@
+AUTHOR_USERNAME = 'Author'
+NON_AUTHOR_USERNAME = 'Не автор'
+NEWS_TITLE = 'Заголовок'
+NEWS_TEXT = 'Текст новости'
+COMMENT_TEXT = 'Текст заметки'
+FORM_COMMENT_TEXT = 'Текст комментария'
